@@ -1,3 +1,4 @@
+##Wrapper file for excecuting R functions for downloading and interpolating phenological observations
 #-----------------------------------------------------------------------------------------------------
 print("Working directory, data and settings")
 #-----------------------------------------------------------------------------------------------------
