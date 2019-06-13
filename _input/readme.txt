@@ -1,2 +1,3 @@
 PHENO_STATION_EPSG31467.shp - shape file of all phenological stations which are potentially mapped
-DGM1000_EPGS31467.asc -- ESRI grid ascii file containing elevation data and corresponding DWD weather grid data set
+WEATHER_GRID_EPSG31467.shp - shape file of all polygons representing weather grid cells
+DEM1000_EPGS31467.asc -- digital elevation model in ESRI grid ascii format
