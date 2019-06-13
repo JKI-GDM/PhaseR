@@ -55,13 +55,13 @@ PHASE.STATION <- fPhaseStation(PHENO.OBS = PHENO.OBS,
                                 start.Phase="10",
                                 start.Day=1)
 #-----------------------------------------------------------------------------------------------------
-#4 -- Germany-wide daily temperatures for a specific year
+#4 -- Import Germany-wide daily temperatures for a specific year
 #-----------------------------------------------------------------------------------------------------
 TEMP.GRID <- fLoadTemp(PHASE.STATION = PHASE.STATION,
                       IN.DIR=IN.DIR, 
                       PARAMETER = "tmit_")
 #-----------------------------------------------------------------------------------------------------
-#5 -- Calculation of effective temperature and temperature sum
+#5 -- Calculation of effective temperature sum
 #-----------------------------------------------------------------------------------------------------
 TEMP.PHENO <- fTeffSum(TEMP.GRID=TEMP.GRID, 
                              PHASE.STATION=PHASE.STATION, 
@@ -69,14 +69,14 @@ TEMP.PHENO <- fTeffSum(TEMP.GRID=TEMP.GRID,
                              Tb="def",
                              T.scale=10)
 #-----------------------------------------------------------------------------------------------------
-#6 -- Determination of optimal quantile (optional) and the DOY, on which quantile is exceeded
+#6 -- DOY determination on which a user-specific or calculated temperature sum quantile is exceeded
 #-----------------------------------------------------------------------------------------------------
 TEMP.PHENO.DOY <- fDoyCrit(TEMP.PHENO=TEMP.PHENO, 
                             quantDet=T, 
                             quantile=0.45,
                             fit=1)
 #-----------------------------------------------------------------------------------------------------
-#7 -- Interpolation (Kriging) of phenologoical phases
+#7 -- Interpolation of phenologoical phases
 #-----------------------------------------------------------------------------------------------------
 PHASE.KRIGE <- fPhaseKrige(W.DIR,
                       IN.DIR,
