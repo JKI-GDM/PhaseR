@@ -1,2 +1,2 @@
 # fPHASE
-* R scripts for downloading and interpolating phenological observations in Germany
+* R functions for downloading, filtering and interpolating phenological observations in Germany
