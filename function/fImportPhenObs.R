@@ -1,36 +1,37 @@
 #-----------------------------------------------------------------------------------------------------
-print("Import phenological observations as result from the function fDownloadPhenObs()")
+print("Import phenological observations as a result from the function fDownloadPhenObs()")
 #-----------------------------------------------------------------------------------------------------
-fImportPhenObs <- function(W.DIR,
-                           IN.DIR,
+fImportPhenObs <- function(OBS.DIR,
                            PLANT,
                            annual=T){
   
   print('Loading phenological observations from disk')
   ### Load local file
-  if(annual==F){pheno.obs <- fread(paste(W.DIR,IN.DIR,PLANT,'_immediate.txt',sep=''), stringsAsFactors = F,data.table = F)}
-  if(annual==T){pheno.obs <- fread(paste(W.DIR,IN.DIR,PLANT,'_annual.txt',sep=''), stringsAsFactors = F,data.table = F)}
+  if(annual==F){pheno.obs <- fread(paste(OBS.DIR,PLANT,'_immediate.txt',sep=''), stringsAsFactors = F,data.table = F)}
+  if(annual==T){pheno.obs <- fread(paste(OBS.DIR,PLANT,'_annual.txt',sep=''), stringsAsFactors = F,data.table = F)}
   pheno.obs <- na.omit(pheno.obs)
   
   print('Summary plot of all observed years')
-  setwd(file.path(W.DIR,IN.DIR))
+  setwd(file.path(OBS.DIR))
   if(annual==T){png(paste("AnnualObservationsYears_",PLANT,c(".png"),sep=""),
       width=2000,height=2000,res=300)}
   if(annual==F){png(paste("ActualObservationsYears_",PLANT,c(".png"),sep=""),
       width=2000,height=2000,res=300)}
+  
+  head(pheno.obs)
   #Plotting
-  plot(pheno.obs$Referenzjahr,pheno.obs$Phase_id.Phase,
-       main=paste("PLANT ID",unique(pheno.obs$Objekt_id.Pflanze)),
+  plot(pheno.obs$YEAR,pheno.obs$PHASE,
+       main=paste("PLANT",unique(pheno.obs$PLANT)),
        xaxt="n",
        yaxt="n",
-       ylab="PHASE ID",
+       ylab="PHASE",
        xlab="YEAR")
   #axis
-  x1 <- seq(min(as.integer(names(split(pheno.obs,pheno.obs$Referenzjahr)))),
-           max(as.integer(names(split(pheno.obs,pheno.obs$Referenzjahr)))),
+  x1 <- seq(min(as.integer(names(split(pheno.obs,pheno.obs$YEAR)))),
+           max(as.integer(names(split(pheno.obs,pheno.obs$YEAR)))),
            1)
-  x2 <- seq(min(as.integer(names(split(pheno.obs,pheno.obs$Referenzjahr)))),
-           max(as.integer(names(split(pheno.obs,pheno.obs$Referenzjahr)))),
+  x2 <- seq(min(as.integer(names(split(pheno.obs,pheno.obs$YEAR)))),
+           max(as.integer(names(split(pheno.obs,pheno.obs$YEAR)))),
            5)
   y1 <- seq(1,67,1)
   y2 <- seq(1,67,5)
