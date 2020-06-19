@@ -11,15 +11,12 @@ fImportPhenObs <- function(OBS.DIR,
   if(annual==T){pheno.obs <- fread(paste(OBS.DIR,PLANT,'_annual.txt',sep=''), stringsAsFactors = F,data.table = F)}
   pheno.obs <- na.omit(pheno.obs)
   
-  print('Summary plot of all observed years')
+  print('Plot available yearly plant- and phase-specific observations')
   setwd(file.path(OBS.DIR))
   if(annual==T){png(paste("AnnualObservationsYears_",PLANT,c(".png"),sep=""),
       width=2000,height=2000,res=300)}
   if(annual==F){png(paste("ActualObservationsYears_",PLANT,c(".png"),sep=""),
       width=2000,height=2000,res=300)}
-  
-  head(pheno.obs)
-  ###Plot available yearly plant- and phase-specific observations  
   plot(pheno.obs$YEAR,pheno.obs$PHASE,
        main=paste("PLANT",unique(pheno.obs$PLANT)),
        xaxt="n",
