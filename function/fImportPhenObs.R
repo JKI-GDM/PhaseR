@@ -19,14 +19,13 @@ fImportPhenObs <- function(OBS.DIR,
       width=2000,height=2000,res=300)}
   
   head(pheno.obs)
-  #Plotting
+  ###Plot available yearly plant- and phase-specific observations  
   plot(pheno.obs$YEAR,pheno.obs$PHASE,
        main=paste("PLANT",unique(pheno.obs$PLANT)),
        xaxt="n",
        yaxt="n",
        ylab="PHASE",
        xlab="YEAR")
-  #axis
   x1 <- seq(min(as.integer(names(split(pheno.obs,pheno.obs$YEAR)))),
            max(as.integer(names(split(pheno.obs,pheno.obs$YEAR)))),
            1)
