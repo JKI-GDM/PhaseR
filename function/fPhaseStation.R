@@ -9,7 +9,7 @@ fPhaseStation <- function(PHENO.OBS,
                           YEAR,
                           start.Phase=10,
                           start.Day=1,
-                          OUTRM=F,
+                          OL.RM=TRUE,
                           F.IV=1.5){
   print('Creating SpatialPoints from pheno data')
   ###Result of function "fImportPhenObs.R"
