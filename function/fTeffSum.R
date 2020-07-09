@@ -3,8 +3,7 @@ print("Calculation of effective temperatures and temperature summation")
 #-----------------------------------------------------------------------------------------------------
 fTeffSum <- function(TEMP.GRID,
                       PHASE.STATION,
-                      Tb="def", 
-                      dl=TRUE,
+                      DL=TRUE,
                       T.scale=10){
   ### Import interpolated temperatures for a specific reference year (result of function fLoadTtemp)
   temps_int_dem <- TEMP.GRID
@@ -13,8 +12,7 @@ fTeffSum <- function(TEMP.GRID,
   ### Extract PHASE and PLANT
   PLANT <- unique(pheno$PLANT)
   PHASE <- unique(pheno$PHASE)
-  ### Selection of base temperature
-  if(Tb == "def"){
+  ### Selection of base temperature "Tb"
     if(is.element(PLANT, c(202,203,204,207,208,215))){Tb <- 5.5} 
     else if(PLANT == 205) {Tb <- 5.0} 
     else if(PLANT == 201) {Tb <- 2.0}
@@ -26,7 +24,7 @@ fTeffSum <- function(TEMP.GRID,
     else if(PLANT < 200) {Tb <- 0.0} 
     else if(PLANT > 300 & PLANT < 40) {Tb <- 0.0} 
     else if(PLANT > 400) {Tb <- 10}
-    else {Tb <- 5}}
+    else {Tb <- 5}
   Tb <- T.scale*Tb
   ### Removing superflous coloumns
   pheno@data <- data.frame(LON=data.frame(coordinates(spTransform(pheno, CRS("+proj=longlat +datum=WGS84"))))[[c(1)]],
@@ -51,7 +49,7 @@ fTeffSum <- function(TEMP.GRID,
   head(temps_int_pheno)
   temps_int_pheno@data[,cols2adj] <- temps_int_pheno@data[,cols2adj]-Tb
   ### Adjusting for daylength
-  if(dl == TRUE){
+  if(DL == TRUE){
     daylengths_station <- temps_int_pheno[,cols2adj]
     LATS <- temps_int_pheno$LAT
     ## Calculation of daylengths
