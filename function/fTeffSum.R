@@ -2,9 +2,7 @@
 print("Calculation of effective temperatures and temperature summation")
 #-----------------------------------------------------------------------------------------------------
 fTeffSum <- function(TEMP.GRID,
-                      PHASE.STATION,
-                      DL=TRUE,
-                      T.scale=10){
+                     PHASE.STATION){
   ### Import interpolated temperatures for a specific reference year (result of function fLoadTtemp)
   temps_int_dem <- TEMP.GRID
   ### Import spatial data frame of stations and phenological observations (result of function fPhaseStation")
@@ -25,7 +23,9 @@ fTeffSum <- function(TEMP.GRID,
     else if(PLANT > 300 & PLANT < 40) {Tb <- 0.0} 
     else if(PLANT > 400) {Tb <- 10}
     else {Tb <- 5}
-  Tb <- T.scale*Tb
+  ### Base temperature is multiplied by 10 according to DWD temperatures 
+  Tb <- Tb*10
+  
   ### Removing superflous coloumns
   pheno@data <- data.frame(LON=data.frame(coordinates(spTransform(pheno, CRS("+proj=longlat +datum=WGS84"))))[[c(1)]],
                            LAT=data.frame(coordinates(spTransform(pheno, CRS("+proj=longlat +datum=WGS84"))))[[c(2)]],
@@ -39,35 +39,40 @@ fTeffSum <- function(TEMP.GRID,
                            DOY=pheno@data$DOY,
                            DOY_start=pheno@data$DOY_start, 
                            stringsAsFactors = F)
+  
   ### Merging of temps_int_dem and pheno
   temps_int_pheno <- merge(pheno,temps_int_dem, by="GRID_ID")
+  
   ### Detection of temperature coloums in temps_int_pheno
   col.start <- length(pheno@data)+1
   col.end <- length(temps_int_pheno@data)
   cols2adj <- (col.start:col.end)#
+  
   ### Subtraction of base temperature
   head(temps_int_pheno)
   temps_int_pheno@data[,cols2adj] <- temps_int_pheno@data[,cols2adj]-Tb
+  
   ### Adjusting for daylength
-  if(DL == TRUE){
-    daylengths_station <- temps_int_pheno[,cols2adj]
-    LATS <- temps_int_pheno$LAT
-    ## Calculation of daylengths
-    for(i in seq(1,ncol(daylengths_station))){
+  daylengths_station <- temps_int_pheno[,cols2adj]
+  LATS <- temps_int_pheno$LAT
+  
+  ### Calculation of daylengths
+  for(i in seq(1,ncol(daylengths_station))){
       d <- as.numeric(substr(names(daylengths_station[i]),start=2,stop=5))
       if(d<0){d<-366+d}
       daylengths_station@data[,i] <- geosphere::daylength(LATS,d)
-      
-    }
+      }
+
   ### Adjusting temperatures by DL/24
-    temps_int_pheno@data[,cols2adj] <- daylengths_station@data/24*temps_int_pheno@data[,cols2adj]
-  }
+  temps_int_pheno@data[,cols2adj] <- daylengths_station@data/24*temps_int_pheno@data[,cols2adj]
+
   ### Delete negative temperatures
   temps_int_pheno@data[temps_int_pheno@data<0] <- 0
   ### For winter crops, the daily temperatures between the first day of phase 10 und DOY=36 are assigned. 
   if(is.element(PLANT,c(202,203,204,205)) & (PHASE != 14 & PHASE!=12)){
     temps_int_pheno$DOY_start <- -366+temps_int_pheno$DOY_start
-  } 
+  }
+  
   ### Calculating temperature sums
   temps_int_pheno <- temps_int_pheno[which(temps_int_pheno$DOY_start >= as.numeric(substr(names(temps_int_pheno)[col.start],start=2,stop=5))),]
   temps_int_pheno <- temps_int_pheno[which(temps_int_pheno$DOY > temps_int_pheno$DOY_start),]
@@ -76,6 +81,7 @@ fTeffSum <- function(TEMP.GRID,
     t_sums[i] <- rowSums(temps_int_pheno@data[i,((which(names(temps_int_pheno)==paste("T",temps_int_pheno$DOY_start[i],sep="")))):
                                                 which(names(temps_int_pheno)==paste("T",temps_int_pheno$DOY[i],sep=""))])
   }
+  
   ### Appending temperature sums to merged data frame
   temps_int_pheno@data$t_sums <- t_sums
   return(temps_int_pheno)
