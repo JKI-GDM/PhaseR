@@ -10,7 +10,7 @@ fPhaseStation <- function(PHENO.OBS,
                           start.Phase=10,
                           start.Day=1,
                           OL.RM=T,
-                          F.STD2=1.5){
+                          OL.STD=1.5){
   
   print('Creating SpatialPoints from pheno data')
   ###Result of function "fImportPhenObs.R"
@@ -48,8 +48,8 @@ fPhaseStation <- function(PHENO.OBS,
   if(OL.RM==T){
     sd <- sd(pheno$DOY, na.rm=T)
     mn <- mean(pheno$DOY, na.rm=T)
-    pheno <- pheno[which(pheno$DOY < mn+F.STD2*sd),]
-    pheno <- pheno[which(pheno$DOY > mn-F.STD2*sd),]
+    pheno <- pheno[which(pheno$DOY < mn+OL.STD*sd),]
+    pheno <- pheno[which(pheno$DOY > mn-OL.STD*sd),]
     }
 
   ### Keep only stations with start and observation date
