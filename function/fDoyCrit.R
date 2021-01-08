@@ -1,13 +1,15 @@
 #-----------------------------------------------------------------------------------------------------
-print("Determination of optimal quantile (optional) and day on which quantile is exceeded")
+print("Determination of optimal quantile (optional) and DOY on which quantile is exceeded")
 #-----------------------------------------------------------------------------------------------------
 fDoyCrit<-function(TEMP.PHENO,
                    OUT.DIR,
-                   F.STD=1.5){
+                   OL.RM=T,
+                   F.STD=1.5,
+                   Q1,
+                   Q2){
   
-  ### Import
   temps_int_pheno <- TEMP.PHENO
-  head(temps_int_pheno)
+  head(TEMP.PHENO)
   
   ### Cumulative sums from start DOY to maximum DOY
   cumsums <- temps_int_pheno
@@ -45,13 +47,15 @@ fDoyCrit<-function(TEMP.PHENO,
       }
       
       
-      ### Appending to temporal object "temps_int_pheno"
+      ### Appending to temporal temps_int_pheno
       temps_int_pheno_opt <- temps_int_pheno
       
       ### Error filtering (Inf and outliers)
+      if(OL.RM==T){
       temps_int_pheno_opt <- temps_int_pheno_opt[which(abs(temps_int_pheno_opt$DOY_PHASE-temps_int_pheno_opt$DOY) <= F.STD*sd(temps_int_pheno_opt$DOY)),]
+      }
       
-      ## Calculation of statistics
+      ### Calculation of statistics
       quantiles$R[q] <- cor(temps_int_pheno_opt@data["DOY"],temps_int_pheno_opt@data["DOY_PHASE"],method="pearson")
       quantiles$RMSE[q] <- sqrt(mean((temps_int_pheno_opt$DOY-temps_int_pheno_opt$DOY_PHASE)^2))
       quantiles$ME[q] <- mean(abs(temps_int_pheno_opt$DOY-temps_int_pheno_opt$DOY_PHASE))
@@ -66,11 +70,12 @@ fDoyCrit<-function(TEMP.PHENO,
       
       setTxtProgressBar(pq, q)
     }
+
     write.csv2(quantiles,
                row.names = FALSE,
                paste(OUT.DIR,'QOPT',PLANT,"-",PHASE,"_",YEAR,"_F1",F.STD*10,".csv",sep=""))
     close(pq)
     temps_int_pheno <- temps_int_pheno_final
     head(temps_int_pheno)
-    return(temps_int_pheno)
+  return(temps_int_pheno)
 }
