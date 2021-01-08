@@ -1,5 +1,5 @@
 #-----------------------------------------------------------------------------------------------------
-print("Determination of optimal quantile (optional) and DOY on which quantile is exceeded")
+print("Determination of DOY on which a spezific temperature sum quantile is exceeded")
 #-----------------------------------------------------------------------------------------------------
 fDoyCrit<-function(TEMP.PHENO,
                    OUT.DIR,
@@ -73,7 +73,7 @@ fDoyCrit<-function(TEMP.PHENO,
 
     write.csv2(quantiles,
                row.names = FALSE,
-               paste(OUT.DIR,'QOPT',PLANT,"-",PHASE,"_",YEAR,"_F1",F.STD*10,".csv",sep=""))
+               paste(OUT.DIR,'QOPT',PLANT,"-",PHASE,"_",YEAR,"_F",F.STD*10,".csv",sep=""))
     close(pq)
     temps_int_pheno <- temps_int_pheno_final
     head(temps_int_pheno)
