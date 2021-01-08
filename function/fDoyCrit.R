@@ -3,7 +3,6 @@ print("Determination of DOY on which a spezific temperature sum quantile is exce
 #-----------------------------------------------------------------------------------------------------
 fDoyCrit<-function(TEMP.PHENO,
                    OUT.DIR,
-                   OL.RM=T,
                    F.STD=1.5,
                    Q1,
                    Q2){
@@ -51,10 +50,8 @@ fDoyCrit<-function(TEMP.PHENO,
       temps_int_pheno_opt <- temps_int_pheno
       
       ### Error filtering (Inf and outliers)
-      if(OL.RM==T){
       temps_int_pheno_opt <- temps_int_pheno_opt[which(abs(temps_int_pheno_opt$DOY_PHASE-temps_int_pheno_opt$DOY) <= F.STD*sd(temps_int_pheno_opt$DOY)),]
-      }
-      
+
       ### Calculation of statistics
       quantiles$R[q] <- cor(temps_int_pheno_opt@data["DOY"],temps_int_pheno_opt@data["DOY_PHASE"],method="pearson")
       quantiles$RMSE[q] <- sqrt(mean((temps_int_pheno_opt$DOY-temps_int_pheno_opt$DOY_PHASE)^2))
