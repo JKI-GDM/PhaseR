@@ -1,5 +1,5 @@
 #-----------------------------------------------------------------------------------------------------
-print("Determination of DOY on which a spezific temperature sum quantile is exceeded")
+print("Determination of critical DOY on which a specific temperature sum quantile is exceeded")
 #-----------------------------------------------------------------------------------------------------
 fDoyCrit<-function(TEMP.PHENO,
                    OUT.DIR,
