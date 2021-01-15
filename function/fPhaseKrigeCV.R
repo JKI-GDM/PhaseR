@@ -13,7 +13,6 @@ fPhaseKrigeCV <- function(DEM.DIR,
   
   ###Import phenologcial station
   temps.int.pheno <- TEMP.PHENO.DOY
-  head(temps.int.pheno)
   
   ###Import DEM
   dem.grid <- raster(file.path(DEM.DIR,DEM.GRID))
@@ -32,6 +31,8 @@ fPhaseKrigeCV <- function(DEM.DIR,
   ###Variogram generation
   variogram = autofitVariogram(DOY_PHASE~DEM, 
                                input_data =  temps.int.pheno)
+  
+  
   ###Cross validation
   print("Autokrige cross validation")
   result.cv <- autoKrige.cv(DOY_PHASE~DEM, temps.int.pheno)
