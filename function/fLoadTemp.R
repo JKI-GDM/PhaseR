@@ -1,9 +1,10 @@
 #-----------------------------------------------------------------------------------------------------
-print("Load interpolated temperature data for a specific vegetation period")
+print("Load interpolated climate data for a specific vegetation period")
 #-----------------------------------------------------------------------------------------------------
 fLoadTemp <- function(PHASE.STATION,
                       IN.DIR,
-                      PARAMETER){
+                      PARAMETER,
+                      YEAR){
   
   ###Load result from function "fPhaseStation"
   pheno <- PHASE.STATION
