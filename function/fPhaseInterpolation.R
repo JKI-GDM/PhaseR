@@ -1,5 +1,5 @@
 #-----------------------------------------------------------------------------------------------------
-print("Interpolation of phenological observations")
+print("Interpolation of filtered phenological observations")
 #-----------------------------------------------------------------------------------------------------
 fPhaseInterpolation <- function(DEM.DIR,
                                 PLANT,
