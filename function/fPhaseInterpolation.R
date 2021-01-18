@@ -8,8 +8,7 @@ fPhaseInterpolation <- function(DEM.DIR,
                                 DEM.GRID,
                                 OUT.DIR,
                                 CNAME,
-                                KRIGE=TRUE,
-                                SPLINE=FALSE){
+                                KRIGE=TRUE){
   ###Import DEM
   dem.grid <- raster(file.path(DEM.DIR,DEM.GRID))
   names(dem.grid)[1] <- "DEM"
@@ -51,7 +50,7 @@ fPhaseInterpolation <- function(DEM.DIR,
       plot(result[[1]])
     }
     
-    if(SPLINE==TRUE){
+    if(KRIGE==FALSE){
       xy <- coordinates(temps.int.pheno)
       v <- temps.int.pheno$DOY_PHA
       
