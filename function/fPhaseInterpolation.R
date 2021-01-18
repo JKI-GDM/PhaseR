@@ -4,7 +4,6 @@ print("Interpolation of filtered phenological observations")
 fPhaseInterpolation <- function(DEM.DIR,
                                 PLANT,
                                 SHP.DIR,
-                                SHP.NAMES,
                                 PHASE.SHP,
                                 DEM.GRID,
                                 OUT.DIR,
@@ -15,8 +14,8 @@ fPhaseInterpolation <- function(DEM.DIR,
   dem.grid <- raster(file.path(DEM.DIR,DEM.GRID))
   names(dem.grid)[1] <- "DEM"
   
-  ###Import phenologcial station
-  files.shp <- read.csv2(SHP.NAMES)
+  ###Import filtered phenologcial station files
+  files.shp <- read.csv2(paste(SHP.DIR,"OPT_",PLANT,"-",PHASE,".csv",sep=""))
   
   for(i in 1:nrow(files.shp)){
     setwd(SHP.DIR)  
