@@ -1,13 +1,23 @@
 #-----------------------------------------------------------------------------------------------------
 print("Function to download phenological observation data from the DWD Climate Data Centre (CDC)")
-print("(https://opendata.dwd.de/climate_environment/CDC/observations_germany/phenology/)")
+#-----------------------------------------------------------------------------------------------------
+#Data source: https://opendata.dwd.de/climate_environment/CDC/observations_germany/phenology/#
+#Author: Hennning Gerstmann, Markus Möller
+#Contact: markus.moeller@julius-kuehn.de
+#-----------------------------------------------------------------------------------------------------
+#-----------------------------------------------------------------------------------------------------
+
+#-----------------------------------------------------------------------------------------------------
+#Function
 #-----------------------------------------------------------------------------------------------------
 fDownloadPhenObs <- function(PLANT, 
                              URL,
-                             annual=T,
+                             annual=TRUE,
+                             IN.DIR,
                              OUT.DIR,
-                             replace=T){
-print("Downloading phenological observations from CDC server ...")
+                             replace=TRUE){
+
+  print("Downloading phenological observations from CDC server ...")
   #### Assigning plant_id to name, if provided
   if(class(PLANT) == 'character'){
     if(!is.na(as.numeric(PLANT))) PLANT <- as.numeric(PLANT)
@@ -17,15 +27,15 @@ print("Downloading phenological observations from CDC server ...")
   ### Specifying immediate or annual reporters
   if(annual==T){
     ftp.file <- paste(URL, "annual_reporters/",sep="")
-    out.file <- paste(W.DIR,OUT.DIR,PLANT,"_annual.txt",sep="")
+    out.file <- paste(OUT.DIR,PLANT,"_annual.txt",sep="")
   }
   if(annual==F){
     ftp.file <- paste(URL, "immediate_reporters/",sep="")
-    out.file <- paste(W.DIR,OUT.DIR,PLANT,"_immediate.txt",sep="")
+    out.file <- paste(OUT.DIR,PLANT,"_immediate.txt",sep="")
   }
   
   ### Determine subdirectory on CDC server
-  plantnames <- read.table(paste(W.DIR,"input/PlantNames.txt",sep=""),header=T,sep=',')
+  plantnames <- read.table(paste(IN.DIR,"/NamesPlant.txt",sep=""),header=T,sep=',')
   ftp.file <- paste(ftp.file,plantnames$group[which(plantnames$pflanzen_id == PLANT)],'/',sep='')
     
   ### specifying data set: recent or historical observations
@@ -50,17 +60,16 @@ print("Downloading phenological observations from CDC server ...")
   ### Combine historical and recent observation data set
   pheno.obs <-  rbind(pheno.obs_h, pheno.obs_r)
   if(!is.null(pheno.obs)){
-    pheno.obs <- data.frame(Qualitetsniveau=pheno.obs$Qualitaetsniveau,
-                              STATION_ID=pheno.obs$Stations_id,
-                              Referenzjahr=pheno.obs$Referenzjahr,
-                              Objekt_id.Pflanze=pheno.obs$Objekt_id,
-                              Phase_id.Phase=pheno.obs$Phase_id,
-                              Eintrittsdatum=pheno.obs$Eintrittsdatum,
-                              Eintrittsdatum_QB=pheno.obs$Eintrittsdatum_QB,
-                              Jultag=pheno.obs$Jultag)
-      
+    pheno.obs <- data.frame(QL=pheno.obs$Qualitaetsniveau,
+                      STATION=pheno.obs$Stations_id,
+                      YEAR=pheno.obs$Referenzjahr,
+                      PLANT=pheno.obs$Objekt_id,
+                      PHASE=pheno.obs$Phase_id,
+                      DATE=pheno.obs$Eintrittsdatum,
+                      QF=pheno.obs$Eintrittsdatum_QB,
+                      DOY=pheno.obs$Jultag)
     pheno.obs <- pheno.obs[!duplicated.data.frame(pheno.obs),]
-    write.table(pheno.obs, out.file,sep=';',row.names = F,col.names = T)
+    write.table(pheno.obs,out.file,sep=';',row.names = F,col.names = T)
    }
    cat('...done')
 }
