@@ -26,13 +26,18 @@ source(file.path(FUNC.DIR,"fLoadAndInstall.R"))
 fLoadAndInstall()
 
 #-----------------------------------------------------------------------------------------------------
-print("Import functions")
+#Download and unzip station-based phenological observations from Climate Data Center server
 #-----------------------------------------------------------------------------------------------------
-source(file.path(W.DIR,FUNC.DIR,"fDownloadPhenObs.R"))
-source(file.path(W.DIR,FUNC.DIR,"fImportPhenObs.R"))
-source(file.path(W.DIR,FUNC.DIR,"fPhaseStation.R"))
-source(file.path(W.DIR,FUNC.DIR,"fLoadTemp.R"))
-source(file.path(W.DIR,FUNC.DIR,"fTeffSum.R"))
+source(file.path(FUNC.DIR,"fDownloadPhenObs.R"))
+fDownloadPhenObs(PLANT = PLANT,
+                 URL="ftp://opendata.dwd.de/climate_environment/CDC/observations_germany/phenology/",
+                 IN.DIR,
+                 OUT.DIR,
+                 replace=TRUE,
+                 annual=TRUE)
+
+
+
 source(file.path(W.DIR,FUNC.DIR,"fDoyCrit.R"))
 source(file.path(W.DIR,FUNC.DIR,"fPhaseKrige.R"))
 #-----------------------------------------------------------------------------------------------------
