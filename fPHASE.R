@@ -2,18 +2,27 @@
 #-----------------------------------------------------------------------------------------------------
 print("Working directory, data and settings")
 #-----------------------------------------------------------------------------------------------------
-W.DIR <- ""#Working directory
-FUNC.DIR <- "_functions/"#folder with functions
-IN.DIR <- "_input/"#folder with input data
-OUT.DIR <- "_output/"#folder storing output data
-CNAME <- "DEM"#column name of shape file of weather grid cells containing elevation data
-YEAR <- 2018
-PLANT <- 202#plant ID
-PHASES <- c(10,12,15,18,19,21,24)#PHASE IDs
+W.DIR <- #Working directory
+FUNC.DIR <- #Folder containing functions
+IN.DIR <- #Folder comtaining input data
+OUT.DIR <- #Folder storing output data
+YEAR <- #Year
+PLANT <- #Plant name ID
+PHASES <- #Phase name IDs
+
 #-----------------------------------------------------------------------------------------------------
 print("Import functions")
 #-----------------------------------------------------------------------------------------------------
-source(file.path(W.DIR,FUNC.DIR,"fPackages.R"))
+
+#-----------------------------------------------------------------------------------------------------
+print("Load all required packages and download/install non-existent packages")
+#-----------------------------------------------------------------------------------------------------
+source(file.path(FUNC.DIR,"fLoadAndInstall.R"))
+fLoadAndInstall()
+
+#-----------------------------------------------------------------------------------------------------
+print("Import functions")
+#-----------------------------------------------------------------------------------------------------
 source(file.path(W.DIR,FUNC.DIR,"fDownloadPhenObs.R"))
 source(file.path(W.DIR,FUNC.DIR,"fImportPhenObs.R"))
 source(file.path(W.DIR,FUNC.DIR,"fPhaseStation.R"))
