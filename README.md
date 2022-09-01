@@ -1,2 +1,2 @@
 # PhaseR
-R functions for downloading, filtering and interpolating phenological observations in Germany. The functions are decribed in detail in [PhaseR wiki](https://github.com/EMRAgit/PhaseR/wiki).
+R functions for downloading, filtering and interpolating phenological observations in Germany. The functions are decribed in detail in [PhaseR wiki](https://github.com/FLFgit/PhaseR/wiki).
