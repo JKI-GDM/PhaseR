@@ -1,7 +1,8 @@
 #-----------------------------------------------------------------------------------------------------
 #-----------------------------------------------------------------------------------------------------
 #-----------------------------------------------------------------------------------------------------
-#Wrapper script that runs R functions to download and interpolate DWD phenological observations 
+#Wrapper script that runs R functions to download, filter and interpolate phenological observations
+#provided by the German Weather Service (DWD)
 #-----------------------------------------------------------------------------------------------------
 #-----------------------------------------------------------------------------------------------------
 #-----------------------------------------------------------------------------------------------------
@@ -11,13 +12,12 @@
 #-----------------------------------------------------------------------------------------------------
 print("Working directory, data and settings")
 #-----------------------------------------------------------------------------------------------------
-W.DIR <- #Working directory
-FUNC.DIR <- #Folder containing functions
-IN.DIR <- #Folder comtaining input data
-OUT.DIR <- #Folder storing output data
-YEAR <- #Year
-PLANT <- #Plant name ID
-PHASES <- #Phase name IDs
+FUNC.DIR <- #directory containing functions
+IN.DIR <- #directory comtaining input data
+OUT.DIR <- #directory storing output data
+YEAR <- #year
+PLANT <- #plant name ID
+PHASES <- #phase name IDs
 
 #-----------------------------------------------------------------------------------------------------
 print("Load all required packages and download/install non-existent packages")
@@ -26,7 +26,7 @@ source(file.path(FUNC.DIR,"fLoadAndInstall.R"))
 fLoadAndInstall()
 
 #-----------------------------------------------------------------------------------------------------
-#Download and unzip station-based phenological observations from Climate Data Center server
+#Download and unzip station-based phenological observations from DWD Climate Data Center server
 #-----------------------------------------------------------------------------------------------------
 source(file.path(FUNC.DIR,"fDownloadPhenObs.R"))
 fDownloadPhenObs(PLANT = PLANT,
@@ -37,13 +37,10 @@ fDownloadPhenObs(PLANT = PLANT,
                  annual=TRUE)
 
 
-
-source(file.path(W.DIR,FUNC.DIR,"fDoyCrit.R"))
-source(file.path(W.DIR,FUNC.DIR,"fPhaseKrige.R"))
 #-----------------------------------------------------------------------------------------------------
 print("Call functions")
 #-----------------------------------------------------------------------------------------------------
-#1 -- Download and unzip station-based phenological observations from Climate Data Center server
+#Download and unzip station-based phenological observations from Climate Data Center server
 #-----------------------------------------------------------------------------------------------------
 fDownloadPhenObs(PLANT = PLANT,
                #URL="ftp://ftp-cdc.dwd.de/pub/CDC/observations_germany/phenology/",
@@ -53,19 +50,18 @@ fDownloadPhenObs(PLANT = PLANT,
                replace=T,
                annual=T)
 
-for(PHASE in PHASES){
 #-----------------------------------------------------------------------------------------------------
-#2 -- Import downloaded phenological observations
+#Import downloaded phenological observations
 #-----------------------------------------------------------------------------------------------------
 PHENO.OBS <- fImportPhenObs(W.DIR,
-                            IN.DIR = "_output/",
-                            PLANT = PLANT,
+                            IN.DIR,
+                            PLANT,
                             annual=T)
 #-----------------------------------------------------------------------------------------------------
-#3 -- Creating spatial data frame of phenological observations
+#Creating spatial data frame of phenological observations
 #-----------------------------------------------------------------------------------------------------
-PHASE.STATION <- fPhaseStation(PHENO.OBS = PHENO.OBS,
-                                IN.DIR = IN.DIR,
+PHASE.STATION <- fPhaseStation(PHENO.OBS=PHENO.OBS,
+                                IN.DIR=IN.DIR,
                                 PHENO.STATIONS = "PHENO_STATION_EPSG31467.shp",
                                 PHASE=PHASE,
                                 PLANT=PLANT,
