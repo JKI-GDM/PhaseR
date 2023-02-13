@@ -10,23 +10,23 @@
 #-----------------------------------------------------------------------------------------------------
 
 #-----------------------------------------------------------------------------------------------------
-print("Working directory, data and settings")
+print("Definition of directories, year, crop type and phases")
 #-----------------------------------------------------------------------------------------------------
-FUNC.DIR <- #directory containing functions
-IN.DIR <- #directory comtaining input data
-OUT.DIR <- #directory storing output data
-YEAR <- #year
-PLANT <- #plant name ID
-PHASES <- #phase name IDs
+FUNC.DIR <- "d:/Dropbox/GIT/rPhaseGit/FUNCTION/"
+IN.DIR <- "d:/Dropbox/GIT/rPhaseGit/INPUT/"
+OUT.DIR <- "d:/Dropbox/GIT/rPhaseGit/OUTPUT/"
+PLANT=202
+PHASE=15
+YEAR=2000
 
 #-----------------------------------------------------------------------------------------------------
-print("Load all required packages and download/install non-existent packages")
+print("Load/install all required packages")
 #-----------------------------------------------------------------------------------------------------
 source(file.path(FUNC.DIR,"fLoadAndInstall.R"))
 fLoadAndInstall()
 
 #-----------------------------------------------------------------------------------------------------
-#Download and unzip station-based phenological observations from DWD Climate Data Center server
+#Download and import of phenological observations
 #-----------------------------------------------------------------------------------------------------
 source(file.path(FUNC.DIR,"fDownloadPhenObs.R"))
 fDownloadPhenObs(PLANT = PLANT,
@@ -36,65 +36,84 @@ fDownloadPhenObs(PLANT = PLANT,
                  replace=TRUE,
                  annual=TRUE)
 
+source(file.path(FUNC.DIR,"fImportPhenObs.R"))
+PHENO.OBS <- fImportPhenObs(OBS.DIR=OUT.DIR,
+                            PLANT = PLANT,
+                            annual=TRUE)
 
 #-----------------------------------------------------------------------------------------------------
-print("Call functions")
+#Creating spatial data frame of phase- and year-specific phenological observations
 #-----------------------------------------------------------------------------------------------------
-#Download and unzip station-based phenological observations from Climate Data Center server
-#-----------------------------------------------------------------------------------------------------
-fDownloadPhenObs(PLANT = PLANT,
-               #URL="ftp://ftp-cdc.dwd.de/pub/CDC/observations_germany/phenology/",
-               URL="ftp://opendata.dwd.de/climate_environment/CDC/observations_germany/phenology/",
-               IN.DIR="_input/",
-               OUT.DIR = "_output/",
-               replace=T,
-               annual=T)
+source(file.path(FUNC.DIR,"fPhaseStation.R"))
+PHASE.STATION <- fPhaseStation(PHENO.OBS = PHENO.OBS,
+                               IN.DIR = IN.DIR,
+                               PHENO.STATIONS = "PHENO_STATION_EPSG31467.shp",
+                               PHASE,
+                               PLANT,
+                               YEAR,
+                               start.Phase=10,
+                               start.DOY=1,
+                               OL.RM = TRUE)
 
 #-----------------------------------------------------------------------------------------------------
-#Import downloaded phenological observations
+#Import daily temperatures for a specific year
 #-----------------------------------------------------------------------------------------------------
-PHENO.OBS <- fImportPhenObs(W.DIR,
-                            IN.DIR,
-                            PLANT,
-                            annual=T)
-#-----------------------------------------------------------------------------------------------------
-#Creating spatial data frame of phenological observations
-#-----------------------------------------------------------------------------------------------------
-PHASE.STATION <- fPhaseStation(PHENO.OBS=PHENO.OBS,
-                                IN.DIR=IN.DIR,
-                                PHENO.STATIONS = "PHENO_STATION_EPSG31467.shp",
-                                PHASE=PHASE,
-                                PLANT=PLANT,
-                                YEAR=YEAR,
-                                FILTER=T,
-                                start.Phase="10",
-                                start.Day=1)
-#-----------------------------------------------------------------------------------------------------
-#4 -- Import Germany-wide daily temperatures for a specific year
-#-----------------------------------------------------------------------------------------------------
+source(file.path(FUNC.DIR,"fLoadTemp.R"))
 TEMP.GRID <- fLoadTemp(PHASE.STATION = PHASE.STATION,
-                      IN.DIR=IN.DIR, 
-                      PARAMETER = "tmit_")
+                       IN.DIR=IN.DIR,
+                       PARAMETER = "tmit_",
+                       YEAR)
+
 #-----------------------------------------------------------------------------------------------------
-#5 -- Calculation of effective temperature sum
+#Calculation of effective temperatures
 #-----------------------------------------------------------------------------------------------------
-TEMP.PHENO <- fTeffSum(TEMP.GRID=TEMP.GRID, 
-                             PHASE.STATION=PHASE.STATION, 
-                             dl=T, 
-                             Tb="def",
-                             T.scale=10)
+source(file.path(FUNC.DIR,"fTeffSum.R"))
+TEMP.PHENO <- fTeffSum(TEMP.GRID=TEMP.GRID,
+                       PHASE.STATION=PHASE.STATION,
+                       T.BASE = TRUE)
+
 #-----------------------------------------------------------------------------------------------------
-#6 -- DOY determination on which a user-specific or calculated temperature sum quantile is exceeded
+#Derivation and assessment of critical effective temperature variants
 #-----------------------------------------------------------------------------------------------------
-TEMP.PHENO.DOY <- fDoyCrit(TEMP.PHENO=TEMP.PHENO, 
-                            quantDet=T, 
-                            quantile=0.45,
-                            fit=1)
-#-----------------------------------------------------------------------------------------------------
-#7 -- Interpolation of phenologoical phases
-#-----------------------------------------------------------------------------------------------------
-PHASE.KRIGE <- fPhaseKrige(W.DIR,
-                      IN.DIR,
-                      DEM.GRID = "DGM1000_EPSG31467.asc",
-                      TEMP.PHENO.DOY=TEMP.PHENO.DOY)
+FILTER <- seq(1,3,0.5)
+for (F.STD in FILTER) {
+source(file.path(FUNC.DIR,"fDoyCrit.R"))
+TEMP.PHENO.DOY <- fDoyCrit(TEMP.PHENO=TEMP.PHENO,
+                                 OUT.DIR,
+                                 F.STD=F.STD,
+                                 Q1=0.3,
+                                 Q2=0.7)
 }
+
+source(file.path(FUNC.DIR,"fFilterAssessment.R"))
+fFilterAssessment(IN.DIR="d:/Dropbox/GIT/rPhaseGit/OUTPUT/",
+                  PLANT,
+                  PHASES=PHASE,
+                  YEARS=YEAR,
+                  MAE=FALSE)
+
+
+#-----------------------------------------------------------------------------------------------------
+#Extract and interpolate optimal observation variant
+#-----------------------------------------------------------------------------------------------------
+source(file.path(FUNC.DIR,"fOptShp.R"))
+fOptShp(SHP.DIR="d:/Dropbox/GIT/rPhaseGit/OUTPUT/",
+        OPT.DIR="d:/Dropbox/GIT/rPhaseGit/OUTPUT/",
+        OUT.DIR="d:/Dropbox/GIT/rPhaseGit/OUTPUT/",
+        PLANT,
+        PHASE)
+
+source(file.path(FUNC.DIR,"fPhaseInterpolation.R"))
+fPhaseInterpolation(PLANT,
+                    PHASE,
+                    YEAR,
+                    SHP.EPSG = 31467,
+                    SHP.DIR = OUT.DIR,
+                    DEM.DIR = IN.DIR,
+                    DEM.GRID = "DGM1000_EPSG31467.asc",
+                    DEM.EPSG = 31467,
+                    OUT.DIR  = OUT.DIR,
+                    KRIGE = TRUE,
+                    SPLINE = FALSE,
+                    VALIDATION = TRUE,
+                    SPACC = TRUE)
