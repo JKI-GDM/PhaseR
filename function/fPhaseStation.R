@@ -8,7 +8,7 @@ fPhaseStation <- function(PHENO.OBS,
                           PLANT,
                           YEAR,
                           start.Phase=10,
-                          start.Day=1,
+                          start.DOY=1,
                           OL.RM=TRUE){
   
   print('Creating SpatialPoints from pheno data')
@@ -33,7 +33,7 @@ fPhaseStation <- function(PHENO.OBS,
     ### Set start date in current year
     if(!is.element(start.Phase,pheno$PHASE)){
       pheno_start <- pheno
-      pheno_start$DOY <- start.Day
+      pheno_start$DOY <- start.DOY
     }else{
       pheno_start <- pheno[which(pheno$PHASE == start.Phase & pheno$YEAR == YEAR),]}}
   colnames(pheno_start)[8] <- 'DOY_start'
